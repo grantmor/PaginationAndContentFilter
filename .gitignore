@@ -1,0 +1,5 @@
+#notes files
+*.note
+
+#tern
+.tern-project
