@@ -1,9 +1,7 @@
 var studentsPerPage = 10;
-
-var $studentList = $('.student-item');
 var $searchBox = $('<div class="student-search"><input placeholder="Search for students..."><button>Search</button></div>');
 
-function removeAllStudents() {
+function hideAllStudents() {
   $('.student-item').hide();
 }
 
@@ -13,55 +11,96 @@ function clearPageNav() {
 }
 
 // returns text string representing html for page buttons
-function updatePageNav(numPerPage) {
-  clearPageNav();
+function generatePageNav(numPerPage) {
   var pageNav;
-  var numberOfStudents = $('.student-list').children().length; // change this to only get students with class of 'visible'
-  var remainder = numberOfStudents % numPerPage;
-  var numberOfPages = Math.floor(numberOfStudents / numPerPage);
-  if (remainder > 0)
-    numberOfPages += 1;
-  console.log(numberOfPages);
+  var numberOfStudents = $('.student-item.selected').length; 
+  var numberOfPages = Math.ceil(numberOfStudents / numPerPage);
 
   pageNav = '<div class="pagination"><ul>';
 
   for(var i = 0; i < numberOfPages; i++) {
     pageNav += '<li><a href="#">' + (i + 1) + '</a></li>';
   }
-
   return pageNav += '</ul></div>';
 }
 
+function updatePageNav() {
+  clearPageNav();
+  $('.page').append(generatePageNav(studentsPerPage));
+  $('.pagination ul li a').on('click', selectPage);
+}
 // sets selected button to active and updates results
-function selectPage() {
+// page argument is optional; this function is either a click handlers
+// or it can be manually invoked to display a given page
+function selectPage(page) {
+
+  var pageNumber;
+
+  if(typeof page === 'object') {
+    pageNumber = $(this).text();
+  } else {
+    pageNumber = page;
+    // Set page passed in to be active *****************************************
+  }
+
   var $buttons = $('.pagination ul li a');
-  var $students = $('.student-item');
-
-  var pageNumber = $(this).text();
-
+  // only grab selected students
+  var $students = $('.student-item.selected');
   var upperBound = parseInt( (pageNumber * studentsPerPage) - 1);
   var lowerBound = parseInt( (pageNumber - 1) * studentsPerPage);
-  console.log(lowerBound);
-  console.log(upperBound);
 
   $buttons.removeClass('active');
   $(this).addClass('active');
 
-  removeAllStudents();
+  hideAllStudents();
 
-  // add students from current page to the DOM
+  // show selected students for current page
   $students.each(function (student) {
     if (student >= lowerBound && student <= upperBound)
       $(this).show();
   });
 }
 
+function selectAllStudents() {
+  $('.student-item').toggleClass('selected');
+}
+
+function searchStudents() {
+  var $searchField = $(this).siblings('input');
+  var text = $searchField.val().toLowerCase();
+  var searchExp = new RegExp(text);
+  var searchString;
+  var $allStudents = $('.student-item');
+  var $studentDetails = $('.student-item .student-details');
+
+
+  if (text !== '') {
+    $allStudents.removeClass('selected');
+  } else {
+    $allStudents.addClass('selected');
+  }
+
+  $searchField.val('');
+
+  // search students
+  $studentDetails.filter(function () {
+    return $(this).find('h3').text().match(searchExp) !== null ||
+           $(this).find('.email').text().match(searchExp) !== null;
+  }).parent().addClass('selected');
+  hideAllStudents();
+  $('.student-item.selected').show();
+  updatePageNav();
+  selectPage(1);
+}
+
+// select all by default
+selectAllStudents();
 // hide all by default
-removeAllStudents();
+hideAllStudents();
 // inserting search box to the DOM
 $('.page-header').append($searchBox);
 // inserting page navigation into the DOM
-$('.page').append(updatePageNav(studentsPerPage));
+$('.page').append(generatePageNav(studentsPerPage));
 // setting active page to first
 $('.pagination ul li a:first').toggleClass('active');
 // display contents of first page (HACK - figure out how to reuse this with selectPage) // ? function that looks at current page and displays those ?
@@ -70,5 +109,8 @@ $('.student-item').each(function (student) {
     $(this).show();
 });
 
+
+/*** Event Handlers ***/
 // add click handlers to buttons
+$('.student-search button').on('click', searchStudents);
 $('.pagination ul li a').on('click', selectPage);
