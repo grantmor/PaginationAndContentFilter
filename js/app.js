@@ -1,7 +1,9 @@
+//TODO: style resultsText, add transitions, clean up, ship
+
 var studentsPerPage = 10;
-var $searchBox = $('<div class="student-search"> \
-                    <input placeholder="Search for students..."> \
-                    <button>Search</button></div>');
+var $searchBox = $('<div class="student-search">' +
+                    '<input placeholder="Search for students...">' +
+                    '<button>Search</button></div>');
 
 function hideAllStudents() {
   $('.student-item').hide();
@@ -12,11 +14,19 @@ function clearPageNav() {
   $('.pagination').remove();
 }
 
+function getNumberOfPages(numResults, numPerPage) {
+  return Math.ceil(numResults / numPerPage);
+}
+
+function getActivePage() {
+  return parseInt($('.pagination ul li a.active').text());
+}
+
 // returns text string representing html for page buttons
 function generatePageNav(numPerPage) {
   var pageNav;
-  var numberOfStudents = $('.student-item.selected').length;
-  var numberOfPages = Math.ceil(numberOfStudents / numPerPage);
+  var numSelected = $('.student-item.selected').length;
+  var numberOfPages = getNumberOfPages(numSelected, studentsPerPage);
 
   pageNav = '<div class="pagination"><ul>';
 
@@ -24,6 +34,36 @@ function generatePageNav(numPerPage) {
     pageNav += '<li><a href="#">' + (i + 1) + '</a></li>';
   }
   return pageNav += '</ul></div>';
+}
+
+function clearResultsText() {
+  $('.page-header h3').remove();
+}
+
+function generateResultsText() {
+  clearResultsText();
+
+  var numSelected = $('.student-item.selected').length;
+  var numPages = getNumberOfPages(numSelected, studentsPerPage);
+  var curPage = getActivePage();
+  var results = '<h3>Students ';
+  var numOnCurPage = curPage * studentsPerPage;
+  var capacityOfAllPages = numPages * studentsPerPage;
+
+  // if current page is the last, deal with remainder
+  if (curPage === numPages)
+    numOnCurPage =  capacityOfAllPages - (capacityOfAllPages - numSelected);
+
+  results += curPage * studentsPerPage - studentsPerPage + 1;
+  results += ' - ';
+  results += numOnCurPage;
+
+  results += ' out of ' + numSelected;
+
+  if (numSelected === 0)
+    results = '<h3>No matches. :(</h3>';
+
+  return results;
 }
 
 // sets selected button to active and updates results
@@ -59,6 +99,7 @@ function selectPage(page) {
     if (student >= lowerBound && student <= upperBound)
       $(this).show();
   });
+  $('.page-header h2').after(generateResultsText());
 }
 
 function updatePageNav() {
@@ -104,11 +145,11 @@ function searchStudents(clearField) {
   hideAllStudents();
   $('.student-item.selected').show();
   updatePageNav();
+  $('.page-header h2').after(generateResultsText());
 }
 
 function selectByCharacter() {
   searchStudents(false);
-  console.log('works');
 }
 
 function initializePage() {
@@ -128,6 +169,8 @@ function initializePage() {
   $('.pagination ul li a:first').toggleClass('active');
   // display contents of first page
   $('.student-item').each(displayFirstPage);
+
+  $('.page-header h2').after(generateResultsText());
 }
 
 initializePage();
