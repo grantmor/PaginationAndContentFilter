@@ -72,8 +72,8 @@ function selectAllStudents() {
   $('.student-item').toggleClass('selected');
 }
 
-function searchStudents() {
-  var $searchField = $(this).siblings('input');
+function searchStudents(clearField) {
+  var $searchField = $('.student-search input');
   var $allStudents = $('.student-item');
   var $studentDetails = $('.student-item .student-details');
 
@@ -93,8 +93,9 @@ function searchStudents() {
     $allStudents.addClass('selected');
   }
 
-  // clear search field
-  $searchField.val('');
+  // clear search field if called with search button
+  if (clearField)
+    $searchField.val('');
 
   // search students
   $studentDetails.filter(searchForString).parent().addClass('selected');
@@ -103,6 +104,11 @@ function searchStudents() {
   hideAllStudents();
   $('.student-item.selected').show();
   updatePageNav();
+}
+
+function selectByCharacter() {
+  searchStudents(false);
+  console.log('works');
 }
 
 function initializePage() {
@@ -130,3 +136,4 @@ initializePage();
 // add click handlers to buttons
 $('.student-search button').on('click', searchStudents);
 $('.pagination ul li a').on('click', selectPage);
+$('.student-search input').on('keyup', selectByCharacter);
