@@ -13,7 +13,7 @@ function clearPageNav() {
 // returns text string representing html for page buttons
 function generatePageNav(numPerPage) {
   var pageNav;
-  var numberOfStudents = $('.student-item.selected').length; 
+  var numberOfStudents = $('.student-item.selected').length;
   var numberOfPages = Math.ceil(numberOfStudents / numPerPage);
 
   pageNav = '<div class="pagination"><ul>';
@@ -28,6 +28,7 @@ function updatePageNav() {
   clearPageNav();
   $('.page').append(generatePageNav(studentsPerPage));
   $('.pagination ul li a').on('click', selectPage);
+  selectPage(1);
 }
 // sets selected button to active and updates results
 // page argument is optional; this function is either a click handlers
@@ -35,25 +36,28 @@ function updatePageNav() {
 function selectPage(page) {
 
   var pageNumber;
+  var $buttons = $('.pagination ul li a');
 
+  $buttons.removeClass('active');
+
+  // if called as an event handler
   if(typeof page === 'object') {
     pageNumber = $(this).text();
   } else {
+    // NOT WORKING
+    $buttons.first().addClass('active');
     pageNumber = page;
-    // Set page passed in to be active *****************************************
   }
 
-  var $buttons = $('.pagination ul li a');
   // only grab selected students
-  var $students = $('.student-item.selected');
   var upperBound = parseInt( (pageNumber * studentsPerPage) - 1);
   var lowerBound = parseInt( (pageNumber - 1) * studentsPerPage);
 
-  $buttons.removeClass('active');
   $(this).addClass('active');
 
   hideAllStudents();
 
+  var $students = $('.student-item.selected');
   // show selected students for current page
   $students.each(function (student) {
     if (student >= lowerBound && student <= upperBound)
@@ -90,7 +94,6 @@ function searchStudents() {
   hideAllStudents();
   $('.student-item.selected').show();
   updatePageNav();
-  selectPage(1);
 }
 
 // select all by default
@@ -108,7 +111,6 @@ $('.student-item').each(function (student) {
   if (student < studentsPerPage)
     $(this).show();
 });
-
 
 /*** Event Handlers ***/
 // add click handlers to buttons
