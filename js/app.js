@@ -59,6 +59,7 @@ function generateResultsText() {
 
   results += ' out of ' + numSelected;
 
+  // if there are no matches, inform the user
   if (numSelected === 0)
     results = '<h3 class="results">No matches. :(</h3>';
 
@@ -114,8 +115,6 @@ function selectAllStudents() {
 
 function searchStudents(clearField) {
 
-  //hideAllStudents();
-
   var $searchField = $('.student-search input');
   var $allStudents = $('.student-item');
   var $studentDetails = $('.student-item .student-details');
@@ -125,9 +124,11 @@ function searchStudents(clearField) {
   var searchString;
 
   // filter function - checks if search string finds a match in name or email
+  // excludes case conversion for student records because they are already
+  // lowercase and this makes the code more readable
   function searchForString() {
-      return $(this).find('h3').text().toLowerCase().match(searchExp) !== null ||
-             $(this).find('.email').text().toLowerCase().match(searchExp) !== null;
+    return $(this).find('h3').text().match(searchExp) !== null ||
+           $(this).find('.email').text().match(searchExp) !== null;
   }
 
   if (text !== '') {
@@ -149,10 +150,12 @@ function searchStudents(clearField) {
   $('.page-header h2').after(generateResultsText());
 }
 
+// runs every time the search field changes
 function selectByCharacter() {
   searchStudents(false);
 }
 
+// sets up the page
 function initializePage() {
   function displayFirstPage (student) {
     if (student < studentsPerPage)
