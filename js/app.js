@@ -1,12 +1,11 @@
-//TODO: style resultsText, add transitions, clean up, ship
-
 var studentsPerPage = 10;
+var fadeSpeed = 150;
 var $searchBox = $('<div class="student-search">' +
                     '<input placeholder="Search for students...">' +
                     '<button>Search</button></div>');
 
 function hideAllStudents() {
-  $('.student-item').hide();
+  $('.student-item').fadeOut(fadeSpeed);
 }
 
 // if page nav exists, clear it
@@ -46,7 +45,7 @@ function generateResultsText() {
   var numSelected = $('.student-item.selected').length;
   var numPages = getNumberOfPages(numSelected, studentsPerPage);
   var curPage = getActivePage();
-  var results = '<h3>Students ';
+  var results = '<h3 class="results">Students ';
   var numOnCurPage = curPage * studentsPerPage;
   var capacityOfAllPages = numPages * studentsPerPage;
 
@@ -61,7 +60,7 @@ function generateResultsText() {
   results += ' out of ' + numSelected;
 
   if (numSelected === 0)
-    results = '<h3>No matches. :(</h3>';
+    results = '<h3 class="results">No matches. :(</h3>';
 
   return results;
 }
@@ -70,6 +69,8 @@ function generateResultsText() {
 // page argument is optional; this function is either a click handlers
 // or it can be manually invoked to display a given page
 function selectPage(page) {
+
+  hideAllStudents();
 
   var pageNumber;
   var $buttons = $('.pagination ul li a');
@@ -91,13 +92,11 @@ function selectPage(page) {
 
   $(this).addClass('active');
 
-  hideAllStudents();
-
   var $students = $('.student-item.selected');
-  // show selected students for current page
+  // fadeIn selected students for current page
   $students.each(function (student) {
     if (student >= lowerBound && student <= upperBound)
-      $(this).show();
+      $(this).fadeIn(fadeSpeed);
   });
   $('.page-header h2').after(generateResultsText());
 }
@@ -114,6 +113,9 @@ function selectAllStudents() {
 }
 
 function searchStudents(clearField) {
+
+  //hideAllStudents();
+
   var $searchField = $('.student-search input');
   var $allStudents = $('.student-item');
   var $studentDetails = $('.student-item .student-details');
@@ -124,8 +126,8 @@ function searchStudents(clearField) {
 
   // filter function - checks if search string finds a match in name or email
   function searchForString() {
-      return $(this).find('h3').text().match(searchExp) !== null ||
-             $(this).find('.email').text().match(searchExp) !== null;
+      return $(this).find('h3').text().toLowerCase().match(searchExp) !== null ||
+             $(this).find('.email').text().toLowerCase().match(searchExp) !== null;
   }
 
   if (text !== '') {
@@ -141,9 +143,8 @@ function searchStudents(clearField) {
   // search students
   $studentDetails.filter(searchForString).parent().addClass('selected');
 
-  // show only students selected by search
-  hideAllStudents();
-  $('.student-item.selected').show();
+  // fadeIn only students selected by search
+  $('.student-item.selected').fadeIn(fadeSpeed);
   updatePageNav();
   $('.page-header h2').after(generateResultsText());
 }
@@ -155,7 +156,7 @@ function selectByCharacter() {
 function initializePage() {
   function displayFirstPage (student) {
     if (student < studentsPerPage)
-      $(this).show();
+      $(this).fadeIn(fadeSpeed);
   }
   // select all by default
   selectAllStudents();
