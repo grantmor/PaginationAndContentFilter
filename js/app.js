@@ -1,8 +1,27 @@
 var studentsPerPage = 10;
-var fadeSpeed = 150;
+var fadeSpeed = 250;
+var previousSearchResults = [];
+var newResults = false;
 var $searchBox = $('<div class="student-search">' +
                     '<input placeholder="Search for students...">' +
                     '<button>Search</button></div>');
+
+// returns an array of the names of selected students
+function getSelectedStudents() {
+  var selectedStudents = [];
+  $('.selected div h3').each(function (student) {
+    selectedStudents.push($(this).text().toLowerCase());
+  });
+  return selectedStudents;
+}
+
+// returns true if search results have changed, otherwise false
+function needsRefresh() {
+  if (JSON.stringify(previousSearchResults) !== JSON.stringify(getSelectedStudents()))
+    return true;
+  else
+    return false;
+}
 
 function hideAllStudents() {
   $('.student-item').fadeOut(fadeSpeed);
@@ -36,7 +55,7 @@ function generatePageNav(numPerPage) {
 
   for(; i < numberOfPages; i++)
     pageNav += '<li><a href="#">' + (i + 1) + '</a></li>';
-    
+
   return pageNav += '</ul></div>';
 }
 
@@ -76,8 +95,6 @@ function generateResultsText() {
 // or it can be manually invoked to display a given page
 function selectPage(page) {
 
-  hideAllStudents();
-
   var pageNumber;
   var $buttons = $('.pagination ul li a');
 
@@ -99,12 +116,17 @@ function selectPage(page) {
   $(this).addClass('active');
 
   var $students = $('.student-item.selected');
-  // fadeIn selected students for current page
-  $students.each(function (student) {
-    if (student >= lowerBound && student <= upperBound)
-      $(this).fadeIn(fadeSpeed);
-  });
-  $('.page-header h2').after(generateResultsText());
+  // if results differ from previous results
+  if (needsRefresh()) {
+    // hide current results
+    hideAllStudents();
+    // fadeIn selected students for current page
+    $students.each(function (student) {
+      if (student >= lowerBound && student <= upperBound)
+        $(this).fadeIn(fadeSpeed);
+    });
+    $('.page-header h2').after(generateResultsText());
+  }
 }
 
 function updatePageNav() {
@@ -149,10 +171,18 @@ function searchStudents(clearField) {
   // search students
   $studentDetails.filter(searchForString).parent().addClass('selected');
 
-  // fadeIn only students selected by search
-  $('.student-item.selected').fadeIn(fadeSpeed);
-  updatePageNav();
-  $('.page-header h2').after(generateResultsText());
+  // only update results if new results differ from the last search
+  if (needsRefresh()) {
+    console.log('Hello from searchStudents, the arrays are not equal');
+    console.log(previousSearchResults, getSelectedStudents());
+    // fadeIn only students selected by search
+    $('.student-item.selected').fadeIn(fadeSpeed);
+    updatePageNav();
+    $('.page-header h2').after(generateResultsText());
+  }
+
+  // load previous search into global variable
+  previousSearchResults = getSelectedStudents();
 }
 
 // runs every time the search field changes
@@ -183,6 +213,7 @@ function initializePage() {
 }
 
 initializePage();
+getSelectedStudents();
 
 /*** Event Handlers ***/
 // add click handlers to buttons
