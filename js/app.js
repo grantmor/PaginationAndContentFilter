@@ -26,12 +26,17 @@ function generatePageNav(numPerPage) {
   var pageNav;
   var numSelected = $('.student-item.selected').length;
   var numberOfPages = getNumberOfPages(numSelected, studentsPerPage);
+  var i = 0;
 
   pageNav = '<div class="pagination"><ul>';
 
-  for(var i = 0; i < numberOfPages; i++) {
+  // don't display page numbers if there's only one page
+  if (numberOfPages <= 1)
+    i = 1;
+
+  for(; i < numberOfPages; i++)
     pageNav += '<li><a href="#">' + (i + 1) + '</a></li>';
-  }
+    
   return pageNav += '</ul></div>';
 }
 
