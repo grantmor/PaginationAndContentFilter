@@ -1,7 +1,6 @@
 var studentsPerPage = 10;
-var fadeSpeed = 250;
+var fadeSpeed = 300;
 var previousSearchResults = [];
-var newResults = false;
 var $searchBox = $('<div class="student-search">' +
                     '<input placeholder="Search for students...">' +
                     '<button>Search</button></div>');
@@ -173,8 +172,6 @@ function searchStudents(clearField) {
 
   // only update results if new results differ from the last search
   if (needsRefresh()) {
-    console.log('Hello from searchStudents, the arrays are not equal');
-    console.log(previousSearchResults, getSelectedStudents());
     // fadeIn only students selected by search
     $('.student-item.selected').fadeIn(fadeSpeed);
     updatePageNav();
