@@ -93,7 +93,6 @@ function generateResultsText() {
 // page argument is optional; this function is either a click handlers
 // or it can be manually invoked to display a given page
 function selectPage(page) {
-  console.log('selectpage');
 
   var pageNumber;
   var $buttons = $('.pagination ul li a');
@@ -128,7 +127,6 @@ function selectPage(page) {
 
 function updatePageNav() {
 
-  console.log('update page nav');
   clearPageNav();
   $('.page').append(generatePageNav(studentsPerPage));
   $('.pagination ul li a').on('click', selectPage);
@@ -186,7 +184,6 @@ function searchStudents(clearField) {
 // runs every time the search field changes
 function selectByCharacter() {
   searchStudents(false);
-  console.log('selectByCharacter clicked');
 }
 
 // sets up the page
