@@ -93,6 +93,7 @@ function generateResultsText() {
 // page argument is optional; this function is either a click handlers
 // or it can be manually invoked to display a given page
 function selectPage(page) {
+  console.log('selectpage');
 
   var pageNumber;
   var $buttons = $('.pagination ul li a');
@@ -115,8 +116,6 @@ function selectPage(page) {
   $(this).addClass('active');
 
   var $students = $('.student-item.selected');
-  // if results differ from previous results
-  if (needsRefresh()) {
     // hide current results
     hideAllStudents();
     // fadeIn selected students for current page
@@ -125,10 +124,11 @@ function selectPage(page) {
         $(this).fadeIn(fadeSpeed);
     });
     $('.page-header h2').after(generateResultsText());
-  }
 }
 
 function updatePageNav() {
+
+  console.log('update page nav');
   clearPageNav();
   $('.page').append(generatePageNav(studentsPerPage));
   $('.pagination ul li a').on('click', selectPage);
@@ -174,9 +174,10 @@ function searchStudents(clearField) {
   if (needsRefresh()) {
     // fadeIn only students selected by search
     $('.student-item.selected').fadeIn(fadeSpeed);
-    updatePageNav();
     $('.page-header h2').after(generateResultsText());
   }
+
+    updatePageNav();
 
   // load previous search into global variable
   previousSearchResults = getSelectedStudents();
@@ -185,6 +186,7 @@ function searchStudents(clearField) {
 // runs every time the search field changes
 function selectByCharacter() {
   searchStudents(false);
+  console.log('selectByCharacter clicked');
 }
 
 // sets up the page
