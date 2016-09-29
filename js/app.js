@@ -36,7 +36,13 @@ function getNumberOfPages(numResults, numPerPage) {
 }
 
 function getActivePage() {
-  return parseInt($('.pagination ul li a.active').text());
+  var numPages = 1;
+  var pageNumber = parseInt($('.pagination ul li a.active').text());
+
+  if (isNaN(pageNumber) || pageNumber === null || pageNumber === undefined)
+    return numPages;
+  else
+    return pageNumber;
 }
 
 // returns text string representing html for page buttons
