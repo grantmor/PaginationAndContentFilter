@@ -1,5 +1,5 @@
 var studentsPerPage = 10;
-var fadeSpeed = 300;
+var fadeSpeed = 250;
 var previousSearchResults = [];
 var $searchBox = $('<div class="student-search">' +
                     '<input placeholder="Search for students...">' +
@@ -14,12 +14,22 @@ function getSelectedStudents() {
   return selectedStudents;
 }
 
+function arraysEqual(one, two) {
+  if (one.length !== two.length) return false;
+
+  for (var i = 0; i < one.length; ++i) {
+    if (one[i] !== two[i]) return false;
+  }
+  return true;
+}
 // returns true if search results have changed, otherwise false
 function needsRefresh() {
-  if (JSON.stringify(previousSearchResults) !== JSON.stringify(getSelectedStudents()))
-    return true;
-  else
+  if (arraysEqual(previousSearchResults, getSelectedStudents())) {
     return false;
+  }
+  else {
+    return true;
+  }
 }
 
 function hideAllStudents() {
@@ -36,7 +46,7 @@ function getNumberOfPages(numResults, numPerPage) {
 }
 
 function getActivePage() {
-  var numPages = 1;
+  var numPages = 1; // in case there are no pages, it defaults to 1
   var pageNumber = parseInt($('.pagination ul li a.active').text());
 
   if (isNaN(pageNumber) || pageNumber === null || pageNumber === undefined)
@@ -121,6 +131,9 @@ function selectPage(page) {
   $(this).addClass('active');
 
   var $students = $('.student-item.selected');
+
+  // only update results if the page needs it!
+  if (needsRefresh()) {
     // hide current results
     hideAllStudents();
     // fadeIn selected students for current page
@@ -128,6 +141,7 @@ function selectPage(page) {
       if (student >= lowerBound && student <= upperBound)
         $(this).fadeIn(fadeSpeed);
     });
+  }
     $('.page-header h2').after(generateResultsText());
 }
 
@@ -215,7 +229,7 @@ function initializePage() {
 }
 
 initializePage();
-getSelectedStudents();
+previousSearchResults = getSelectedStudents();
 
 /*** Event Handlers ***/
 // add click handlers to buttons
