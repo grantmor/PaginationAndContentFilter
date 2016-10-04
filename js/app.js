@@ -166,7 +166,6 @@ function searchStudents(clearField) {
 
   var text = $searchField.val().toLowerCase();
   var searchExp = new RegExp(text);
-  var searchString;
 
   // filter function - checks if search string finds a match in name or email
   // excludes case conversion for student records because they are already
